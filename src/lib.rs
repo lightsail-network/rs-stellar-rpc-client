@@ -640,6 +640,28 @@ impl Client {
     ///
     /// # Errors
     pub fn new(base_url: &str) -> Result<Self, Error> {
+        let mut headers = HeaderMap::new();
+        headers.insert("X-Client-Name", unsafe {
+            "soroban-cli".parse().unwrap_unchecked()
+        });
+        let version = VERSION.unwrap_or("devel");
+        headers.insert("X-Client-Version", unsafe {
+            version.parse().unwrap_unchecked()
+        });
+        let http_client = Arc::new(
+            HttpClientBuilder::default()
+                .set_headers(headers)
+                .build(&base_url)?,
+        );
+        Self::new_with_http_client(base_url, http_client)
+    }
+
+    /// Creates a new client with a custom http client
+    /// # Errors
+    pub fn new_with_http_client(
+        base_url: &str,
+        http_client: Arc<HttpClient>,
+    ) -> Result<Self, Error> {
         // Add the port to the base URL if there is no port explicitly included
         // in the URL and the scheme allows us to infer a default port.
         // Jsonrpsee requires a port to always be present even if one can be
@@ -665,19 +687,7 @@ impl Client {
         let uri = Uri::from_parts(parts).map_err(Error::InvalidRpcUrlFromUriParts)?;
         let base_url = Arc::from(uri.to_string());
         tracing::trace!(?uri);
-        let mut headers = HeaderMap::new();
-        headers.insert("X-Client-Name", unsafe {
-            "soroban-cli".parse().unwrap_unchecked()
-        });
-        let version = VERSION.unwrap_or("devel");
-        headers.insert("X-Client-Version", unsafe {
-            version.parse().unwrap_unchecked()
-        });
-        let http_client = Arc::new(
-            HttpClientBuilder::default()
-                .set_headers(headers)
-                .build(&base_url)?,
-        );
+
         Ok(Self {
             base_url,
             timeout_in_secs: 30,
