@@ -1,3 +1,5 @@
+pub use http;
+
 use http::{uri::Authority, Uri};
 use itertools::Itertools;
 use jsonrpsee_core::params::ObjectParams;
