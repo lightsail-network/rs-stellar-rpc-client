@@ -104,6 +104,8 @@ pub enum Error {
     CannotAuthorizeRawTransaction,
     #[error("Missing result for tnx")]
     MissingOp,
+    #[error(transparent)]
+    HttpClientError(#[from] http::Error),
 }
 
 #[derive(serde::Deserialize, serde::Serialize, Debug, Clone)]
