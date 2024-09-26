@@ -36,6 +36,6 @@ sha2 = "0.10.7"
 tracing = "0.1.40"
 
 # networking
-jsonrpsee-http-client = "0.20.1"
-jsonrpsee-core = "0.20.1"
-http = "1.0.0"
+jsonrpsee-http-client = "0.24.5"
+jsonrpsee-core = "0.24.5"
+http = "1.1.0"
